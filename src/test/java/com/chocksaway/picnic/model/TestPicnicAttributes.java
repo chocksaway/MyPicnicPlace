@@ -1,12 +1,18 @@
 package com.chocksaway.picnic.model;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestPicnicAttributes {
     @Test
     public void testPicnicAttributes() {
         PicnicAttributes picnicAttributes = new PicnicAttributes().build();
-        assert picnicAttributes != null;
-        assertNotNull(picnicAttributes.getName(), "name should not be null");
+        assertNotNull(picnicAttributes);
+        assertNotNull(picnicAttributes.getId());
+        assertInstanceOf(UUID.class, picnicAttributes.getId());
+        assertEquals(0.0, picnicAttributes.getLat());
+        assertEquals(0.0, picnicAttributes.getLon());
     }
 }
