@@ -17,11 +17,11 @@ import com.chocksaway.picnic.service.FileSystemStorageService;
 
 @RestController
 @RequestMapping("/api")
-public class UploadController {
+public class ImageUploadController {
 
     private final FileSystemStorageService storageService;
 
-    public UploadController(FileSystemStorageService storageService) {
+    public ImageUploadController(FileSystemStorageService storageService) {
         this.storageService = storageService;
     }
 

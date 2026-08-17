@@ -3,6 +3,9 @@ package com.chocksaway.picnic.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,14 +18,17 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.chocksaway.picnic.image.ImageMetadata;
+import com.chocksaway.picnic.image.ImageMetadataRepository;
 import com.chocksaway.picnic.service.FileSystemStorageService;
 
 public class UploadControllerTest {
 
     @Test
     public void testImageUploadStoresFileAndReturnsMetadata(@TempDir Path tempDir) throws Exception {
-        FileSystemStorageService storageService = new FileSystemStorageService(tempDir.toString());
-        UploadController controller = new UploadController(storageService);
+        ImageMetadataRepository imageMetadataRepository = mock(ImageMetadataRepository.class);
+        FileSystemStorageService storageService = new FileSystemStorageService(tempDir.toString(), imageMetadataRepository);
+        ImageUploadController controller = new ImageUploadController(storageService);
 
         byte[] imageBytes = new byte[] {
                 (byte)0xFF, (byte)0xD8, (byte)0xFF
@@ -73,6 +79,8 @@ public class UploadControllerTest {
         Path stored = tempDir.resolve(filename);
         assertTrue(Files.exists(stored), "Uploaded file must exist on disk");
         assertEquals(imageBytes.length, Files.size(stored));
+
+        verify(imageMetadataRepository).save(any(ImageMetadata.class));
     }
 }
 
