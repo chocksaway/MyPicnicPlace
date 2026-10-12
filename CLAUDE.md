@@ -48,7 +48,7 @@ Configuration lives in `src/main/resources/application.properties`: `upload.dir`
 
 ### Frontend
 
-The frontend lives in a separate project, `../MyPicnicPlaceFrontend` (Vite + TypeScript, Leaflet with marker clustering). It loads picnic sites from `GET /api/picnics` and shows each `photoUrl` (or a placeholder) on hover. In dev, Vite proxies `/api` and `/uploads` to this backend on `localhost:8080` (`vite.config.ts`), so the backend has no CORS config. `npm run seed` there POSTs sample picnics (skipping names that already exist).
+The frontend lives in a separate project, `../MyPicnicPlaceFrontend` (Vite + TypeScript, Leaflet with marker clustering). It loads picnic sites from `GET /api/picnics` and shows each `photoUrl` (or a placeholder) on hover. In dev, Vite proxies `/api` and `/uploads` to this backend on `127.0.0.1:8080` (`vite.config.ts`), so the backend has no CORS config. The backend listens on `127.0.0.1` only (`server.address`); LAN devices reach it through Vite (`npm run dev:lan`). `npm run seed` there POSTs sample picnics (skipping names that already exist).
 
 ## Testing notes
 
