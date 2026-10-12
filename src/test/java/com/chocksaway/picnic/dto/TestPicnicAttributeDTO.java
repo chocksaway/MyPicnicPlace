@@ -39,8 +39,14 @@ public class TestPicnicAttributeDTO {
     }
 
     @Test
-    void negativeLatLongProduceViolations() {
-        PicnicAttributeDTO dto = new PicnicAttributeDTO(uuid, -1, -1);
+    void negativeLongitudeIsValid() {
+        PicnicAttributeDTO dto = new PicnicAttributeDTO(uuid, 51.5073, -0.1657);
+        assertTrue(validator.validate(dto).isEmpty());
+    }
+
+    @Test
+    void outOfRangeLatLongProduceViolations() {
+        PicnicAttributeDTO dto = new PicnicAttributeDTO(uuid, -95, 190);
         Set<ConstraintViolation<PicnicAttributeDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
         // Expect two violations: lat and lon

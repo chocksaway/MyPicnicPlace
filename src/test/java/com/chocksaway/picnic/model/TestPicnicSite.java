@@ -9,7 +9,7 @@ public class TestPicnicSite {
     @Test
     public void testPicnicSiteBuild() {
         final String name = "myPicnicName";
-        PicnicAttributes attributes = new PicnicAttributes().build();
+        PicnicAttributes attributes = PicnicAttributes.builder().build();
         Picnic picnic = new Picnic(name, attributes);
         assertNotNull(picnic);
         assertEquals("The picnic name should be myPicnicName", "myPicnicName",
