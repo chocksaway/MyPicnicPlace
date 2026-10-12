@@ -65,7 +65,9 @@ class PicnicControllerTest {
         try (var factory = Validation.buildDefaultValidatorFactory()) {
             Validator validator = factory.getValidator();
             assertTrue(validator.validate(new CreatePicnicRequest("ok", 51.5, -0.16, null, null)).isEmpty());
-            assertEquals(3, validator.validate(new CreatePicnicRequest(" ", 95, 190, null, null)).size());
+            assertEquals(3, validator.validate(new CreatePicnicRequest(" ", 95.0, 190.0, null, null)).size());
+            // Missing coordinates must be rejected, not defaulted to 0,0
+            assertEquals(2, validator.validate(new CreatePicnicRequest("ok", null, null, null, null)).size());
         }
     }
 }

@@ -45,6 +45,13 @@ public class TestPicnicAttributeDTO {
     }
 
     @Test
+    void missingLatLongProduceViolations() {
+        PicnicAttributeDTO dto = new PicnicAttributeDTO();
+        dto.setId(uuid);
+        assertEquals(2, validator.validate(dto).size());
+    }
+
+    @Test
     void outOfRangeLatLongProduceViolations() {
         PicnicAttributeDTO dto = new PicnicAttributeDTO(uuid, -95, 190);
         Set<ConstraintViolation<PicnicAttributeDTO>> violations = validator.validate(dto);
