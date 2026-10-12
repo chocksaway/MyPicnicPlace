@@ -1,6 +1,7 @@
 package com.chocksaway.picnic.controller;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -39,12 +40,24 @@ class PicnicApiIT extends AbstractRedisIT {
                 .andExpect(jsonPath("$.name").value("Hyde Park"))
                 .andExpect(jsonPath("$.lat").value(51.5073))
                 .andExpect(jsonPath("$.lon").value(-0.1657))
-                .andExpect(jsonPath("$.description").value("Near the Serpentine"));
+                .andExpect(jsonPath("$.description").value("Near the Serpentine"))
+                .andExpect(jsonPath("$.photoUrl").value(nullValue()))
+                .andExpect(jsonPath("$.photoFilename").doesNotExist());
 
         mvc.perform(get("/api/picnics"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name").value("Hyde Park"));
+    }
+
+    @Test
+    void photoFilenameIsReturnedAsUploadUrl() throws Exception {
+        String location = postPicnic("""
+                {"name":"With photo","lat":51.5,"lon":-0.16,"photoFilename":"abc.png"}
+                """);
+        mvc.perform(get(location))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.photoUrl").value("/uploads/abc.png"));
     }
 
     @Test

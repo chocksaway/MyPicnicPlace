@@ -36,3 +36,6 @@ build/
 
 ### Local MCP config ###
 .mcp.json
+
+### Uploaded images (runtime data, upload.dir) ###
+uploads/

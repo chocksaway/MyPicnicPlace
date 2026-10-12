@@ -31,7 +31,7 @@ Standard Spring Boot layout under `src/main/java/com/chocksaway/picnic/`:
 
 - `MyPicnicPlace.java` — `@SpringBootApplication` entry point.
 - `controller/` — REST controllers. `ImageUploadController` exposes `POST /api/upload` (multipart), validates the file is non-empty and has an `image/*` content type, then delegates storage to `FileSystemStorageService`.
-- `controller/PicnicController.java` — `/api/picnics`: `POST` (validated `CreatePicnicRequest`, server generates the id, returns 201 + `Location`), `GET /{id}` (404 if missing), `GET` (list). Persists through `PicnicRepository`.
+- `controller/PicnicController.java` — `/api/picnics`: `POST` (validated `CreatePicnicRequest`, server generates the id, returns 201 + `Location`), `GET /{id}` (404 if missing), `GET` (list). Persists through `PicnicRepository`. Responses are `PicnicResponse`, which replaces the stored `photoFilename` with a `photoUrl` (via `FileSystemStorageService.getFileUrl`, null when there's no photo); the stored `PicnicRecord` is never returned directly.
 - `service/FileSystemStorageService.java` — stores uploaded files on disk under the `upload.dir` property (see `application.properties`, default `uploads/`), renaming each file to a random UUID + original extension to avoid collisions/path traversal, and creates the directory on startup. Each upload also saves an `ImageMetadata` record to Redis.
 - `repository/PicnicRepository.java` — Redis storage for `PicnicRecord` via `StringRedisTemplate`: JSON values under `picnic:<id>`, plus a `picnics` set of ids used for listing. `save`/`deleteById` write both in one MULTI/EXEC transaction (`SessionCallback`) so the value and the index can't drift apart.
 - `image/ImageMetadata.java`, `image/ImageMetadataRepository.java` — image metadata (id, original name, content type, size, path, upload time) stored in Redis under `image:<id>`. Nothing reads it back yet (`findById`/`deleteById` are unused).
@@ -42,13 +42,13 @@ Standard Spring Boot layout under `src/main/java/com/chocksaway/picnic/`:
 
 Key request flow for uploads: `ImageUploadController` → `FileSystemStorageService.store()` (writes file, returns UUID filename) → response includes `url` from `FileSystemStorageService.getFileUrl()`, which is served statically per `WebConfig`'s resource handler mapping.
 
-Key request flow for picnic sites: `PicnicController` → builds `PicnicAttributes`/`Picnic` → `PicnicRecord.from()` → `PicnicRepository.save()` (Redis).
+Key request flow for picnic sites: `PicnicController` → builds `PicnicAttributes`/`Picnic` → `PicnicRecord.from()` → `PicnicRepository.save()` (Redis) → returned as `PicnicResponse`.
 
 Configuration lives in `src/main/resources/application.properties`: `upload.dir` (storage location), multipart size limits (`spring.servlet.multipart.max-file-size` / `max-request-size`, both 10MB), and `spring.data.redis.host` / `port`.
 
 ### Frontend
 
-The frontend lives in a separate project, `../MyPicnicPlaceFrontend` (Vite + TypeScript, Leaflet with marker clustering). It shows picnic sites on a UK map from a hard-coded list and does not call this backend yet.
+The frontend lives in a separate project, `../MyPicnicPlaceFrontend` (Vite + TypeScript, Leaflet with marker clustering). It loads picnic sites from `GET /api/picnics` and shows each `photoUrl` (or a placeholder) on hover. In dev, Vite proxies `/api` and `/uploads` to this backend on `localhost:8080` (`vite.config.ts`), so the backend has no CORS config. `npm run seed` there POSTs sample picnics (skipping names that already exist).
 
 ## Testing notes
 
