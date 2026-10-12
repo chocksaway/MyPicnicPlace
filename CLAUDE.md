@@ -14,7 +14,9 @@ Use the Maven wrapper (`./mvnw`), not a system-installed Maven.
 
 ```bash
 ./mvnw compile                 # compile main sources
-./mvnw test                    # run the full test suite
+./mvnw test                    # run unit tests (no Docker/Redis needed)
+./mvnw verify                  # unit tests + *IT integration tests (needs Docker; starts a Redis container)
+./mvnw verify -Dit.test=PicnicApiIT    # unit tests + a single integration test class
 ./mvnw test -Dtest=TestPicnicAttributes          # run a single test class
 ./mvnw test -Dtest=TestPicnicAttributeDTO#negativeLatLongProduceViolations  # run a single test method
 ./mvnw spring-boot:run          # run the app locally
@@ -50,6 +52,7 @@ The frontend lives in a separate project, `../MyPicnicPlaceFrontend` (Vite + Typ
 
 ## Testing notes
 
+- Integration tests are named `*IT` and run by the failsafe plugin during `./mvnw verify`, not `./mvnw test`. They extend `AbstractRedisIT` (`src/test/java/com/chocksaway/picnic/`), which starts the full app with MockMvc against a Testcontainers Redis (`TestcontainersConfiguration`, wired via `@ServiceConnection`) and flushes Redis before each test. All ITs share one context and one container; uploads go to `target/it-uploads`.
 - Tests use plain JUnit 5, not always `@SpringBootTest` — e.g. `UploadControllerTest` constructs `FileSystemStorageService` and `ImageUploadController` directly with a JUnit `@TempDir`, and hand-implements `MultipartFile` rather than mocking the framework.
 - `MultipartFileFactoryTest` demonstrates loading a classpath resource (`src/main/resources/img/chocksaway.png`) into a `MockMultipartFile` for upload-related tests.
 - `PicnicControllerTest` constructs `PicnicController` directly with a Mockito mock of `PicnicRepository` (no Spring context, no Redis) and validates `CreatePicnicRequest` with a plain `Validator`.
