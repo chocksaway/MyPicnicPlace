@@ -107,4 +107,4 @@ src/main/java/com/chocksaway/picnic/
 
 ## System map
 
-`tools/graph/` has a small extractor that reads the Java source and generates a set of linked Markdown notes (an Obsidian vault) mapping each endpoint through its controller, service and repository to Redis or the filesystem.  See `tools/graph/README.md`.
+`tools/graph/` has a small extractor that reads the Java source and generates a set of linked Markdown notes (an Obsidian vault) mapping each endpoint through its controller, service and repository to Redis or the filesystem.  See [tools/graph/README.md](tools/graph/README.md).
