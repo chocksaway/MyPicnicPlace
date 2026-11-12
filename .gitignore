@@ -39,3 +39,6 @@ build/
 
 ### Uploaded images (runtime data, upload.dir) ###
 uploads/
+
+### System map extractor output (generated) ###
+tools/graph/out/
